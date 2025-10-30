@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arham Topiwala - Portfolio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent-primary: #00d4ff;
+            --accent-secondary: #0099cc;
+            --accent-gradient: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Canvas Background */
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* Subtle Background Overlay */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(0, 212, 255, 0.03) 0%, transparent 70%);
+            z-index: 1;
+        }
+
+        /* Main Container */
+        .loader-container {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        /* Brand Section */
+        .brand-section {
+            margin-bottom: 4rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .brand-name {
+            font-size: clamp(3.5rem, 8vw, 6rem);
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.5rem;
+            line-height: 1;
+        }
+
+        .name-gradient {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-role {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            color: var(--text-secondary);
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-top: 1rem;
+        }
+
+        /* Simple Loader */
+        .loader-wrapper {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeIn 0.8s ease 0.3s forwards;
+        }
+
+        /* Clean Circle Loader */
+        .circle-loader {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            border-top-color: var(--accent-primary);
+            animation: rotate 1.5s linear infinite;
+        }
+
+        .circle-loader-inner {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: calc(100% - 30px);
+            height: calc(100% - 30px);
+            border: 3px solid rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+            border-bottom-color: var(--accent-secondary);
+            animation: rotate 2s linear infinite reverse;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Center Content */
+        .loader-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .loader-icon {
+            font-size: 2rem;
+            color: var(--accent-primary);
+        }
+
+        .loader-percentage {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.6s forwards;
+            margin-bottom: 2.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-gradient);
+            width: 0%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Simple Dots Animation */
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+
+        /* Tech Stack Icons */
+        .tech-stack {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.9s forwards;
+        }
+
+        .tech-icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 12px;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .tech-icon:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.2);
+        }
+
+        /* Fade Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Complete Fade Out */
+        .fade-out {
+            animation: fadeOut 0.6s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .brand-name {
+                font-size: clamp(2.5rem, 10vw, 4rem);
+            }
+
+            .brand-role {
+                font-size: clamp(0.85rem, 2.5vw, 1rem);
+                letter-spacing: 0.1em;
+            }
+
+            .loader-wrapper {
+                width: 150px;
+                height: 150px;
+                margin-bottom: 2.5rem;
+            }
+
+            .loader-icon {
+                font-size: 1.5rem;
+            }
+
+            .loader-percentage {
+                font-size: 1.2rem;
+            }
+
+            .brand-section {
+                margin-bottom: 3rem;
+            }
+
+            .tech-stack {
+                gap: 1rem;
+            }
+
+            .tech-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .loader-container {
+                padding: 1.5rem;
+            }
+
+            .brand-section {
+                margin-bottom: 2.5rem;
+            }
+
+            .loader-wrapper {
+                width: 130px;
+                height: 130px;
+                margin-bottom: 2rem;
+            }
+
+            .progress-container {
+                margin-bottom: 2rem;
+            }
+
+            .tech-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Canvas Background -->
+    <canvas id="canvas"></canvas>
+
+    <!-- Subtle Background Overlay -->
+    <div class="bg-gradient"></div>
+
+    <!-- Main Container -->
+    <div class="loader-container" id="loaderContainer">
+        <!-- Brand Section -->
+        <div class="brand-section">
+            <h1 class="brand-name">
+                <span class="name-gradient">Arham</span>
+            </h1>
+            <p class="brand-role">Full-Stack Developer</p>
+        </div>
+
+        <!-- Loader -->
+        <div class="loader-wrapper">
+            <div class="circle-loader">
+                <div class="circle-loader-inner"></div>
+            </div>
+            <div class="loader-center">
+                <i class="fas fa-code loader-icon"></i>
+                <span class="loader-percentage" id="percentage">0%</span>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p class="progress-text">
+                <span id="statusText">Loading</span><span class="loading-dots"></span>
+            </p>
+        </div>
+
+        <!-- Tech Stack Icons -->
+        <div class="tech-stack">
+            <div class="tech-icon" title="HTML5">
+                <i class="fab fa-html5"></i>
+            </div>
+            <div class="tech-icon" title="CSS3">
+                <i class="fab fa-css3-alt"></i>
+            </div>
+            <div class="tech-icon" title="JavaScript">
+                <i class="fab fa-js-square"></i>
+            </div>
+            <div class="tech-icon" title="Python">
+                <i class="fab fa-python"></i>
+            </div>
+            <div class="tech-icon" title="Django">
+                <i class="fab fa-python"></i>
+            </div>
+            <div class="tech-icon" title="Database">
+                <i class="fas fa-database"></i>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Canvas Background Animation with Particles
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 212, 255, 0.4)';
+                ctx.fill();
+            }
+        }
+
+        // Create particles
+        for (let i = 0; i < 80; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+
+            // Draw connections between nearby particles
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(0, 212, 255, ${0.15 * (1 - distance / 150)})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Loading simulation
+        let progress = 0;
+        const progressFill = document.getElementById('progressFill');
+        const percentage = document.getElementById('percentage');
+        const statusText = document.getElementById('statusText');
+
+        const statuses = [
+            'Loading',
+            'Initializing',
+            'Building',
+            'Preparing',
+            'Almost there',
+            'Ready'
+        ];
+
+        let statusIndex = 0;
+
+        const interval = setInterval(() => {
+            progress += Math.random() * 15;
+
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+
+                progressFill.style.width = '100%';
+                percentage.textContent = '100%';
+                statusText.textContent = 'Ready';
+
+                // Fade out and redirect
+                setTimeout(() => {
+                    document.getElementById('loaderContainer').classList.add('fade-out');
+                    
+                    // Redirect to portfolio home page
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 600);
+                }, 500);
+            } else {
+                progressFill.style.width = progress + '%';
+                percentage.textContent = Math.floor(progress) + '%';
+
+                // Update status text
+                const newStatusIndex = Math.min(
+                    Math.floor((progress / 100) * (statuses.length - 1)),
+                    statuses.length - 2
+                );
+
+                if (newStatusIndex > statusIndex) {
+                    statusIndex = newStatusIndex;
+                    statusText.textContent = statuses[statusIndex];
+                }
+            }
+        }, 200);
+    </script>
+</body>
+</html>

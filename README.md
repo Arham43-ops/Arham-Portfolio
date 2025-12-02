@@ -1,10 +1,10 @@
-# Arham's Portfolio Website
+# Arham Topiwala - Portfolio Website
 
 A modern, responsive portfolio website showcasing my skills, projects, and experience as a Full-Stack Developer. Built with clean HTML, CSS, and JavaScript, featuring a sleek dark theme with glassmorphism effects and smooth animations.
 
 ## 🚀 Live Demo
 
-[View Portfolio](https://arham43-ops.github.io/Arham-Portfolio/) 
+[View Portfolio](https://arhamtopiwala.github.io/portfolio) 
 
 ## ✨ Features
 
@@ -165,4 +165,3 @@ Violation of these terms may result in legal action. This portfolio represents o
 ---
 
 **Built with ❤️ by Arham Topiwala**
-
